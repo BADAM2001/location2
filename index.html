@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Location Tracker</title>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBpxDGezrR7A4N_OUQDP2SXbs5Hsj8NxAA",
+      authDomain: "locationtracker-55210.firebaseapp.com",
+      projectId: "locationtracker-55210",
+      storageBucket: "locationtracker-55210.appspot.com",
+      messagingSenderId: "425208898635",
+      appId: "1:425208898635:web:c119b5061711f67d0059ce"
+    };
+
+    // Initialize Firebase and Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Fetch Geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        // Display the location on the web page
+        document.getElementById("latitude").textContent = latitude;
+        document.getElementById("longitude").textContent = longitude;
+
+        try {
+          // Save the location to Firebase Firestore
+          await setDoc(doc(db, "locations", "friend-location"), {
+            latitude: latitude,
+            longitude: longitude
+          });
+          console.log("Location successfully sent to Firestore!");
+        } catch (error) {
+          console.error("Error sending location: ", error);
+        }
+      }, (error) => {
+        alert(`Geolocation error: ${error.message}`);
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  </script>
+</head>
+<body>
+  <h1>Your Location</h1>
+  <p><strong>Latitude:</strong> <span id="latitude"></span></p>
+  <p><strong>Longitude:</strong> <span id="longitude"></span></p>
+</body>
+</html>
